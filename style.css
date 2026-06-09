@@ -29,6 +29,8 @@
     --header-height: 70px;
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --bg-canvas-opacity: 0.85;
+    --message-user-glow: 0 0 20px rgba(168, 85, 247, 0.35);
+    --message-bot-glow: 0 0 15px rgba(99, 102, 241, 0.15);
 }
 
 /* Light Theme Variables */
@@ -52,6 +54,8 @@ body.light-theme {
     --glow-shadow: 0 4px 20px rgba(124, 58, 237, 0.12);
     --glow-shadow-blue: 0 4px 20px rgba(37, 99, 235, 0.12);
     --shadow-soft: 0 10px 30px rgba(9, 9, 11, 0.05);
+    --message-user-glow: 0 4px 15px rgba(124, 58, 237, 0.2);
+    --message-bot-glow: 0 4px 15px rgba(79, 70, 229, 0.08);
 }
 
 body.light-theme .welcome-logo svg,
@@ -648,7 +652,7 @@ body {
     background: linear-gradient(135deg, var(--color-purple-dark), var(--color-indigo));
     color: #fff;
     border-bottom-right-radius: 4px;
-    box-shadow: var(--shadow-soft), var(--glow-shadow);
+    box-shadow: var(--shadow-soft), var(--message-user-glow);
 }
 
 .message-row.bot .message-bubble {
@@ -656,7 +660,7 @@ body {
     border: 1px solid var(--border-glass);
     color: var(--text-primary);
     border-bottom-left-radius: 4px;
-    box-shadow: var(--shadow-soft);
+    box-shadow: var(--shadow-soft), var(--message-bot-glow);
     backdrop-filter: blur(10px);
 }
 
