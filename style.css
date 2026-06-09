@@ -35,32 +35,59 @@
 
 /* Light Theme Variables */
 body.light-theme {
-    --bg-dark: #f4f4f5;
-    --bg-card: rgba(255, 255, 255, 0.65);
-    --bg-glass: rgba(244, 244, 245, 0.55);
-    --border-glass: rgba(9, 9, 11, 0.08);
-    --border-glass-active: rgba(124, 58, 237, 0.45);
+    --bg-dark: #f8fafc;
+    --bg-card: rgba(255, 255, 255, 0.85);
+    --bg-glass: rgba(255, 255, 255, 0.72);
+    --border-glass: rgba(15, 23, 42, 0.08);
+    --border-glass-active: rgba(99, 102, 241, 0.35);
     
-    --color-purple: #7c3aed;
-    --color-blue: #2563eb;
-    --color-indigo: #4f46e5;
-    --color-purple-dark: #6d28d9;
-    --color-blue-dark: #1d4ed8;
+    --color-purple: #8b5cf6;
+    --color-blue: #3b82f6;
+    --color-indigo: #6366f1;
+    --color-purple-dark: #7c3aed;
+    --color-blue-dark: #2563eb;
     
-    --text-primary: #09090b;
-    --text-secondary: #3f3f46;
-    --text-muted: #71717a;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
     
-    --glow-shadow: 0 4px 20px rgba(124, 58, 237, 0.12);
-    --glow-shadow-blue: 0 4px 20px rgba(37, 99, 235, 0.12);
-    --shadow-soft: 0 10px 30px rgba(9, 9, 11, 0.05);
-    --message-user-glow: 0 4px 15px rgba(124, 58, 237, 0.2);
-    --message-bot-glow: 0 4px 15px rgba(79, 70, 229, 0.08);
+    --glow-shadow: 0 8px 30px rgba(139, 92, 246, 0.08);
+    --glow-shadow-blue: 0 8px 30px rgba(59, 130, 246, 0.08);
+    --shadow-soft: 0 10px 30px rgba(15, 23, 42, 0.04);
+    --message-user-glow: 0 6px 20px rgba(124, 58, 237, 0.16);
+    --message-bot-glow: 0 6px 20px rgba(15, 23, 42, 0.04);
 }
 
+/* Specific Light Theme Component Overrides */
 body.light-theme .welcome-logo svg,
 body.light-theme .bot-avatar svg {
-    filter: drop-shadow(0 0 2px rgba(9, 9, 11, 0.15));
+    filter: drop-shadow(0 0 2px rgba(15, 23, 42, 0.15));
+}
+
+body.light-theme .user-avatar {
+    background: #e2e8f0;
+    color: #334155;
+    border-color: rgba(15, 23, 42, 0.12);
+}
+
+body.light-theme .suggestion-card {
+    background: rgba(255, 255, 255, 0.75);
+}
+
+body.light-theme .suggestion-card:hover {
+    background: rgba(124, 58, 237, 0.05);
+}
+
+body.light-theme ::-webkit-scrollbar-thumb {
+    background: rgba(15, 23, 42, 0.15);
+}
+
+body.light-theme ::-webkit-scrollbar-thumb:hover {
+    background: rgba(124, 58, 237, 0.3);
+}
+
+body.light-theme .theme-toggle-group {
+    background: rgba(15, 23, 42, 0.04);
 }
 
 
