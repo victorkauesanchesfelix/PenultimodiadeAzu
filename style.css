@@ -1,7 +1,7 @@
 /* Design Tokens and Variables */
 :root {
-    --font-primary: 'Plus Jakarta Sans', sans-serif;
-    --font-secondary: 'Outfit', sans-serif;
+    --font-primary: 'Inter', sans-serif;
+    --font-secondary: 'Space Grotesk', sans-serif;
     
     /* Sleek Soft Dark Mode Color Palette */
     --bg-dark: #18181c;

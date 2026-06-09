@@ -5,6 +5,7 @@ class ParticleSystem {
         
         this.ctx = this.canvas.getContext('2d');
         this.particles = [];
+        this.stars = [];
         this.mouse = { x: null, y: null, radius: 150 };
         
         // Settings
@@ -24,10 +25,17 @@ class ParticleSystem {
     init() {
         this.resizeCanvas();
         this.particles = [];
+        this.stars = [];
         
         // Create initial particles
         for (let i = 0; i < this.maxParticles; i++) {
             this.particles.push(this.createParticle(false));
+        }
+
+        // Create background stars
+        const numStars = window.innerWidth < 768 ? 50 : 150;
+        for (let i = 0; i < numStars; i++) {
+            this.stars.push(this.createStar());
         }
     }
     
@@ -82,6 +90,17 @@ class ParticleSystem {
             alpha: Math.random() * 0.5 + 0.35,
             fadeSpeed: Math.random() * 0.005 + 0.002,
             fadeDirection: Math.random() > 0.5 ? 1 : -1
+        };
+    }
+
+    createStar() {
+        return {
+            x: Math.random() * this.canvas.width,
+            y: Math.random() * this.canvas.height,
+            size: Math.random() * 1.5 + 0.5,
+            baseAlpha: Math.random() * 0.5 + 0.1,
+            twinkleSpeed: Math.random() * 0.02 + 0.005,
+            timeOffset: Math.random() * Math.PI * 2
         };
     }
     
@@ -221,11 +240,35 @@ class ParticleSystem {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
     
+    drawStars() {
+        const time = Date.now() * 0.001;
+        this.ctx.fillStyle = '#ffffff';
+        this.ctx.shadowBlur = 4;
+        this.ctx.shadowColor = 'rgba(255, 255, 255, 0.4)';
+        
+        for (let star of this.stars) {
+            // Calculate twinkling effect using sine wave
+            const alpha = star.baseAlpha + Math.sin(time * star.twinkleSpeed * 100 + star.timeOffset) * 0.3;
+            const clampedAlpha = Math.max(0, Math.min(1, alpha));
+            
+            this.ctx.globalAlpha = clampedAlpha;
+            this.ctx.beginPath();
+            this.ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+        
+        this.ctx.globalAlpha = 1.0;
+        this.ctx.shadowBlur = 0;
+    }
+    
     animate() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         
         // Render aura gradients
         this.drawAuraGlow();
+
+        // Draw twinkling stars
+        this.drawStars();
         
         // Draw network
         this.drawLines();
