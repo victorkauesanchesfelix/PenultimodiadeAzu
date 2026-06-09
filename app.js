@@ -3,6 +3,7 @@ let chats = [];
 let activeChatId = null;
 let currentTheme = 'dark';
 let bgOpacity = 85;
+let isWaitingForResponse = false;
 
 // DOM Elements
 const sidebar = document.getElementById('sidebar');
@@ -316,24 +317,11 @@ function handleMessageSubmit() {
     // Save state
     saveChatsToStorage();
     renderChatList();
-    
-    // Show Typing Indicator
+
+    // Show Typing Indicator and call Azure AI
     showTypingIndicator();
-    
-    // Generate Smart Mock Response
-    setTimeout(() => {
-        const botResponseText = getSmartBotResponse(text);
-        hideTypingIndicator();
-        
-        const botMsg = { sender: 'bot', text: botResponseText, timestamp: new Date().toISOString() };
-        currentChat.messages.push(botMsg);
-        
-        renderMessageBubble('bot', botResponseText);
-        scrollToBottom();
-        
-        saveChatsToStorage();
-        renderChatList();
-    }, 1200 + Math.random() * 600); // 1.2 to 1.8s delay
+    isWaitingForResponse = true;
+    callAzureAI(currentChat);
 }
 
 // Select a suggestion card
@@ -344,34 +332,52 @@ function selectSuggestion(suggestionText) {
 }
 window.selectSuggestion = selectSuggestion;
 
-// Smart Mock Bot Responses based on keywords
-function getSmartBotResponse(userText) {
-    const text = userText.toLowerCase();
-    
-    if (text.includes('quântica') || text.includes('fisica') || text.includes('física')) {
-        return "A computação quântica baseia-se nos princípios da mecânica quântica, como superposição e emaranhamento:\n\n1. **Superposição:** Permite que qubits existam em 0, 1 ou ambos os estados ao mesmo tempo.\n2. **Emaranhamento:** Links quânticos entre partículas que aceleram o processamento.\n\nEnquanto computadores clássicos resolvem problemas sequencialmente, computadores quânticos exploram múltiplos caminhos simultaneamente!";
-    }
-    
-    if (text.includes('fluxo') || text.includes('trabalho') || text.includes('otimizar') || text.includes('produtividade')) {
-        return "Para otimizar o seu fluxo de trabalho, aqui estão 3 práticas essenciais:\n\n- **Automação:** Delegue tarefas repetitivas a scripts ou IAs.\n- **Método Pomodoro:** Divida o trabalho em blocos de foco de 25 minutos com pequenos intervalos.\n- **Organização Visual:** Utilize quadros Kanban (como Notion ou Trello) para mapear gargalos.";
-    }
-    
-    if (text.includes('javascript') || text.includes('js') || text.includes('código') || text.includes('ordenar') || text.includes('função')) {
-        return "Claro! Veja esta função Javascript limpa para ordenar um array de objetos com base em qualquer chave de forma dinâmica:\n\n```javascript\nfunction ordenarPorChave(array, chave) {\n  return [...array].sort((a, b) => {\n    if (a[chave] < b[chave]) return -1;\n    if (a[chave] > b[chave]) return 1;\n    return 0;\n  });\n}\n```\nVocê pode testar executando `ordenarPorChave(usuarios, 'nome')`. Ela retorna uma nova lista ordenada.";
-    }
+// Call Azure AI via secure serverless function with full conversation history
+async function callAzureAI(currentChat) {
+    // Build messages array from conversation history for contextual replies
+    const messages = currentChat.messages.map(msg => ({
+        role: msg.sender === 'user' ? 'user' : 'assistant',
+        content: msg.text
+    }));
 
-    if (text.includes('olá') || text.includes('oi') || text.includes('hello') || text.includes('bom dia') || text.includes('boa tarde')) {
-        return "Olá! Eu sou o KCR Nexus. Como posso ajudar você a construir o futuro da tecnologia hoje?";
-    }
+    try {
+        const response = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages })
+        });
 
-    // Default pool of responsive lines
-    const fallbacks = [
-        "Entendi! Como o KCR Nexus é uma interface inteligente em desenvolvimento por Victor Kauê, essa resposta é um demonstrativo.\n\nEm breve, este painel será conectado a um agente cognitivo de IA ativo. O que achou do design do console?",
-        "Muito interessante! A arquitetura do KCR Nexus está preparada para acoplar qualquer LLM moderno (como GPT-4, Claude ou Gemini) com histórico contextual local.",
-        "Excelente ponto! Podemos estruturar o salvamento de histórico de conversas no banco de dados quando integrarmos o agente de IA definitivo. Por enquanto, seu histórico fica salvo no navegador!"
-    ];
-    
-    return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Erro ao conectar ao agente.');
+        }
+
+        const botResponseText = data.reply;
+
+        hideTypingIndicator();
+        isWaitingForResponse = false;
+
+        const botMsg = { sender: 'bot', text: botResponseText, timestamp: new Date().toISOString() };
+        currentChat.messages.push(botMsg);
+
+        renderMessageBubble('bot', botResponseText);
+        scrollToBottom();
+        saveChatsToStorage();
+        renderChatList();
+
+    } catch (err) {
+        console.error('Azure AI error:', err);
+        hideTypingIndicator();
+        isWaitingForResponse = false;
+
+        const errorText = `⚠️ Erro ao obter resposta: ${err.message}`;
+        const errMsg = { sender: 'bot', text: errorText, timestamp: new Date().toISOString() };
+        currentChat.messages.push(errMsg);
+        renderMessageBubble('bot', errorText);
+        scrollToBottom();
+        saveChatsToStorage();
+    }
 }
 
 // Typing Indicator Controls
