@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="KCR Nexus - Uma interface premium e futurista de Chatbot com suporte para conversas inteligentes.">
+    <title>KCR Nexus | Chatbot</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Interactive Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <div class="app-container">
+        <!-- Sidebar: Chat History and Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-wrapper">
+                    <!-- SVG Cube Logo -->
+                    <svg class="cube-logo" viewBox="0 0 120 120" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="topGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#a855f7" />
+                                <stop offset="100%" stop-color="#3b82f6" />
+                            </linearGradient>
+                            <linearGradient id="leftGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" stop-color="#7c3aed" />
+                                <stop offset="100%" stop-color="#1d4ed8" />
+                            </linearGradient>
+                            <linearGradient id="rightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#6366f1" />
+                                <stop offset="100%" stop-color="#1e3a8a" />
+                            </linearGradient>
+                            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="6" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                        </defs>
+                        <g filter="url(#glow)">
+                            <!-- Top Face -->
+                            <path d="M60 25 L95 45 L60 65 L25 45 Z" fill="url(#topGrad)" />
+                            <!-- Left Face -->
+                            <path d="M25 45 L60 65 L60 100 L25 80 Z" fill="url(#leftGrad)" />
+                            <!-- Right Face -->
+                            <path d="M60 65 L95 45 L95 80 L60 100 Z" fill="url(#rightGrad)" />
+                        </g>
+                    </svg>
+                </div>
+                <span class="logo-text">KCR <span class="accent-text">Nexus</span></span>
+            </div>
+
+            <button class="btn btn-new-chat" id="new-chat-btn">
+                <i data-lucide="plus"></i>
+                <span>Nova conversa</span>
+            </button>
+
+            <div class="chat-list-container">
+                <div class="list-title">Conversas Recentes</div>
+                <div class="chat-list" id="chat-list">
+                    <!-- Chats will be dynamically inserted here -->
+                </div>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">K</div>
+                    <div class="user-info">
+                        <span class="username">Victor Kauê</span>
+                        <span class="status-badge">Online</span>
+                    </div>
+                </div>
+                <button class="btn-icon" id="settings-btn" title="Configurações">
+                    <i data-lucide="settings"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-area">
+            <header class="chat-header">
+                <div class="header-left">
+                    <button class="btn-icon mobile-toggle" id="sidebar-toggle" aria-label="Abrir Menu">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <div class="chat-title-container">
+                        <h2 class="chat-title" id="chat-title">Nova conversa</h2>
+                        <span class="chat-status"><span class="pulse-dot"></span>Pronto para conversar</span>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-icon" id="clear-chat-btn" title="Limpar conversa atual">
+                        <i data-lucide="trash-2"></i>
+                    </button>
+                    <button class="btn-icon" id="share-btn" title="Compartilhar conversa">
+                        <i data-lucide="share-2"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="chat-messages" id="chat-messages">
+                <!-- Welcome/Onboarding Panel -->
+                <div class="onboarding-container" id="onboarding">
+                    <div class="welcome-card">
+                        <div class="welcome-logo">
+                            <svg viewBox="0 0 120 120" width="80" height="80" xmlns="http://www.w3.org/2000/svg">
+                                <g filter="url(#glow)">
+                                    <path d="M60 25 L95 45 L60 65 L25 45 Z" fill="url(#topGrad)" />
+                                    <path d="M25 45 L60 65 L60 100 L25 80 Z" fill="url(#leftGrad)" />
+                                    <path d="M60 65 L95 45 L95 80 L60 100 Z" fill="url(#rightGrad)" />
+                                </g>
+                            </svg>
+                        </div>
+                        <h1>Bem-vindo ao <span class="gradient-text">KCR Nexus</span></h1>
+                        <p class="subtitle">Sua interface de conversação avançada. Explore o futuro da inteligência artificial.</p>
+                        
+                        <div class="suggestions-grid">
+                            <button class="suggestion-card" onclick="selectSuggestion('Como posso otimizar meu fluxo de trabalho?')">
+                                <i data-lucide="sparkles"></i>
+                                <span>Fluxo de Trabalho</span>
+                                <p>Sugira ideias para melhorar minha produtividade.</p>
+                            </button>
+                            <button class="suggestion-card" onclick="selectSuggestion('Explique o conceito de computação quântica de forma simples.')">
+                                <i data-lucide="brain"></i>
+                                <span>Conceitos Complexos</span>
+                                <p>Explique a física de forma compreensível.</p>
+                            </button>
+                            <button class="suggestion-card" onclick="selectSuggestion('Crie uma função em Javascript para ordenar objetos por chave.')">
+                                <i data-lucide="code"></i>
+                                <span>Ajuda com Programação</span>
+                                <p>Escreva códigos ou resolva bugs complexos.</p>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Messages will be injected here -->
+                <div class="messages-list" id="messages-list"></div>
+
+                <!-- Typing indicator -->
+                <div class="typing-indicator-wrapper" id="typing-indicator" style="display: none;">
+                    <div class="bot-avatar">
+                        <svg viewBox="0 0 120 120" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M60 25 L95 45 L60 65 L25 45 Z" fill="url(#topGrad)" />
+                            <path d="M25 45 L60 65 L60 100 L25 80 Z" fill="url(#leftGrad)" />
+                            <path d="M60 65 L95 45 L95 80 L60 100 Z" fill="url(#rightGrad)" />
+                        </svg>
+                    </div>
+                    <div class="typing-bubble">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="chat-input-wrapper">
+                <form id="chat-form" class="chat-form">
+                    <div class="input-container">
+                        <textarea id="message-input" placeholder="Pergunte ao KCR Nexus..." rows="1" required></textarea>
+                        <div class="input-controls">
+                            <button type="button" class="btn-icon-input" id="attachment-btn" title="Anexar arquivo (Em breve)">
+                                <i data-lucide="paperclip"></i>
+                            </button>
+                            <button type="submit" class="btn-send" id="send-btn" title="Enviar mensagem">
+                                <i data-lucide="send-horizontal"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <div class="input-disclaimer">
+                    Nexus KCR. As respostas são geradas para demonstração e prototipagem.
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-modal" style="display: none;">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Configurações do KCR Nexus</h3>
+                <button class="btn-icon modal-close" id="close-settings-btn" aria-label="Fechar configurações">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Theme Option -->
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <span class="setting-label">Tema Visual</span>
+                        <span class="setting-desc">Altere o esquema de cores da aplicação</span>
+                    </div>
+                    <div class="theme-toggle-group">
+                        <button type="button" class="btn-toggle active" id="theme-dark-btn">
+                            <i data-lucide="moon"></i>
+                            <span>Escuro</span>
+                        </button>
+                        <button type="button" class="btn-toggle" id="theme-light-btn">
+                            <i data-lucide="sun"></i>
+                            <span>Claro</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Background Opacity Option -->
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <span class="setting-label">Opacidade do Fundo</span>
+                        <span class="setting-desc">Ajuste a transparência das luzes e partículas</span>
+                    </div>
+                    <div class="slider-group">
+                        <input type="range" id="bg-opacity-slider" min="10" max="100" value="85">
+                        <span class="opacity-value" id="opacity-value">85%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script and Animations -->
+    <script type="module" src="particles.js"></script>
+    <script type="module" src="app.js"></script>
+</body>
+</html>
