@@ -260,7 +260,7 @@ function renderMessageBubble(sender, text) {
     messagesList.appendChild(row);
 }
 
-// Formats message text: handles linebreaks and code blocks
+// Formats message text: handles linebreaks, code blocks and basic markdown
 function formatMessageText(text) {
     let escaped = text
         .replace(/&/g, "&amp;")
@@ -273,10 +273,20 @@ function formatMessageText(text) {
         return `<pre><code class="language-${lang}">${code.trim()}</code></pre>`;
     });
 
+    // Handle bold: **text**
+    escaped = escaped.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
+    
+    // Handle italic: *text* (that are not part of bold)
+    escaped = escaped.replace(/\*(.*?)\*/g, "<em>$1</em>");
+    
+    // Handle headings: ### Heading or ## Heading
+    escaped = escaped.replace(/^### (.*$)/gim, "<h3>$1</h3>");
+    escaped = escaped.replace(/^## (.*$)/gim, "<h2>$1</h2>");
+    escaped = escaped.replace(/^# (.*$)/gim, "<h1>$1</h1>");
+
     // Replace linebreaks with <br> (only outside pre blocks)
-    // A simple split and join handles typical chat formatting safely
     return escaped.split('\n').map((line) => {
-        if (line.startsWith('<pre>') || line.startsWith('</pre>') || line.startsWith('<code') || line.startsWith('</code')) {
+        if (line.startsWith('<pre>') || line.startsWith('</pre>') || line.startsWith('<code') || line.startsWith('</code') || line.match(/^<h[1-3]>/)) {
             return line;
         }
         return line;
